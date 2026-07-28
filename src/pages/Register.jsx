@@ -41,30 +41,74 @@ function Register() {
     }
 
     return (
-        <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'Arial' }}>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required />
-                <br /><br />
-                <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
-                <br /><br />
-                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-                <br /><br />
-                <input type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleChange} required />
-                <br /><br />
-                <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
-                <br /><br />
-                <select name="role" value={formData.role} onChange={handleChange}>
-                    <option value="PATIENT">Patient</option>
-                    <option value="DOCTOR">Doctor</option>
-                </select>
-                <br /><br />
-                <button type="submit">Register</button>
-            </form>
-            {message && <p>{message}</p>}
-            <p>Already have an account? <Link to="/login">Login here</Link></p>
+        <div style={{
+            minHeight: '90vh',
+            backgroundColor: '#F4F9FF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'Arial'
+        }}>
+            <div style={{
+                backgroundColor: '#FFFFFF',
+                padding: '40px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 20px rgba(111, 168, 220, 0.2)',
+                width: '350px'
+            }}>
+                <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px' }}>
+                    Create Account
+                </h1>
+                <form onSubmit={handleSubmit}>
+                    <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required style={inputStyle} />
+                    <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required style={inputStyle} />
+                    <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required style={inputStyle} />
+                    <input type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleChange} required style={inputStyle} />
+                    <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required style={inputStyle} />
+                    <select name="role" value={formData.role} onChange={handleChange} style={inputStyle}>
+                        <option value="PATIENT">Patient</option>
+                        <option value="DOCTOR">Doctor</option>
+                    </select>
+                    <button type="submit" style={buttonStyle}>
+                        Register
+                    </button>
+                </form>
+                {message && (
+                    <p style={{ textAlign: 'center', color: '#4A90D9', marginTop: '15px' }}>
+                        {message}
+                    </p>
+                )}
+                <p style={{ textAlign: 'center', marginTop: '20px', color: '#2C3E50' }}>
+                    Already have an account?{' '}
+                    <Link to="/login" style={{ color: '#4A90D9' }}>
+                        Login here
+                    </Link>
+                </p>
+            </div>
         </div>
     );
 }
+
+const inputStyle = {
+    width: '100%',
+    padding: '12px',
+    marginBottom: '15px',
+    border: '1px solid #DCEEFA',
+    borderRadius: '8px',
+    backgroundColor: '#F9FCFF',
+    fontSize: '14px',
+    boxSizing: 'border-box'
+};
+
+const buttonStyle = {
+    width: '100%',
+    padding: '12px',
+    backgroundColor: '#6FA8DC',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    cursor: 'pointer'
+};
 
 export default Register;

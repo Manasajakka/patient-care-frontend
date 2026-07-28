@@ -66,53 +66,111 @@ function Dashboard() {
     }
 
     return (
-        <div style={{ maxWidth: '500px', margin: '50px auto', fontFamily: 'Arial' }}>
-            <h1>Book an Appointment</h1>
-            <form onSubmit={fetchOpenSlots}>
-                <input
-                    type="number"
-                    placeholder="Your Patient ID"
-                    value={patientId}
-                    onChange={(e) => setPatientId(e.target.value)}
-                    required
-                />
-                <br /><br />
-                <input
-                    type="number"
-                    placeholder="Doctor ID"
-                    value={doctorId}
-                    onChange={(e) => setDoctorId(e.target.value)}
-                    required
-                />
-                <br /><br />
-                <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    required
-                />
-                <br /><br />
-                <button type="submit">Find Open Slots</button>
-            </form>
+        <div style={{
+            minHeight: '90vh',
+            backgroundColor: '#F4F9FF',
+            display: 'flex',
+            justifyContent: 'center',
+            paddingTop: '50px',
+            fontFamily: 'Arial'
+        }}>
+            <div style={{
+                backgroundColor: '#FFFFFF',
+                padding: '40px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 20px rgba(111, 168, 220, 0.2)',
+                width: '450px',
+                height: 'fit-content'
+            }}>
+                <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px' }}>
+                    Book an Appointment
+                </h1>
+                <form onSubmit={fetchOpenSlots}>
+                    <input
+                        type="number"
+                        placeholder="Your Patient ID"
+                        value={patientId}
+                        onChange={(e) => setPatientId(e.target.value)}
+                        required
+                        style={inputStyle}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Doctor ID"
+                        value={doctorId}
+                        onChange={(e) => setDoctorId(e.target.value)}
+                        required
+                        style={inputStyle}
+                    />
+                    <input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                        style={inputStyle}
+                    />
+                    <button type="submit" style={buttonStyle}>
+                        Find Open Slots
+                    </button>
+                </form>
 
-            {message && <p>{message}</p>}
+                {message && (
+                    <p style={{ textAlign: 'center', color: '#4A90D9', marginTop: '15px' }}>
+                        {message}
+                    </p>
+                )}
 
-            {slots.length > 0 && (
-                <div>
-                    <h3>Available Times</h3>
-                    {slots.map((slot) => (
-                        <button
-                            key={slot}
-                            onClick={() => bookSlot(slot)}
-                            style={{ margin: '5px', padding: '8px 12px' }}
-                        >
-                            {formatTime(slot)}
-                        </button>
-                    ))}
-                </div>
-            )}
+                {slots.length > 0 && (
+                    <div style={{ marginTop: '20px' }}>
+                        <h3 style={{ color: '#2C3E50' }}>Available Times</h3>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {slots.map((slot) => (
+                                <button
+                                    key={slot}
+                                    onClick={() => bookSlot(slot)}
+                                    style={slotButtonStyle}
+                                >
+                                    {formatTime(slot)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
+
+const inputStyle = {
+    width: '100%',
+    padding: '12px',
+    marginBottom: '15px',
+    border: '1px solid #DCEEFA',
+    borderRadius: '8px',
+    backgroundColor: '#F9FCFF',
+    fontSize: '14px',
+    boxSizing: 'border-box'
+};
+
+const buttonStyle = {
+    width: '100%',
+    padding: '12px',
+    backgroundColor: '#6FA8DC',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    cursor: 'pointer'
+};
+
+const slotButtonStyle = {
+    padding: '10px 14px',
+    backgroundColor: '#F9FCFF',
+    color: '#4A90D9',
+    border: '1px solid #6FA8DC',
+    borderRadius: '8px',
+    fontSize: '14px',
+    cursor: 'pointer'
+};
 
 export default Dashboard;
