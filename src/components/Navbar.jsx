@@ -17,7 +17,10 @@ function Navbar() {
             <Link to="/register" style={linkStyle}>Register</Link>
             <Link to="/login" style={linkStyle}>Login</Link>
             <Link to="/dashboard" style={linkStyle}>Dashboard</Link>
+            <Link to="/my-appointments" style={linkStyle}>My Appointments</Link>
             <Link to="/availability" style={linkStyle}>Set Availability</Link>
+            <Link to="/doctor-dashboard" style={linkStyle}>My Patients</Link>
+
         </nav>
     );
 }
