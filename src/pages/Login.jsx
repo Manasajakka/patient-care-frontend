@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -8,6 +8,7 @@ function Login() {
     });
 
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -28,6 +29,7 @@ function Login() {
 
             if (response.ok) {
                 setMessage(text);
+                setTimeout(() => navigate('/dashboard'), 1000);
             } else {
                 setMessage(`Error: ${text}`);
             }
