@@ -42,6 +42,9 @@ function PaymentForm() {
             if (result.error) {
                 setMessage(`Payment failed: ${result.error.message}`);
             } else if (result.paymentIntent.status === 'succeeded') {
+                await fetch(`http://localhost:8080/api/payments/confirm/${result.paymentIntent.id}`, {
+                    method: 'POST'
+                });
                 setMessage('Payment successful!');
             }
         } catch (error) {
