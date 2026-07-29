@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 
-function Login() {
+function CompleteDoctorProfile() {
     const [formData, setFormData] = useState({
-        email: '',
-        password: ''
+        userId: '',
+        specialization: '',
+        licenseNumber: '',
+        yearsExperience: ''
     });
 
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -19,25 +19,18 @@ function Login() {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/login', {
+            const response = await fetch('http://localhost:8080/api/doctors/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
 
             if (response.ok) {
-                const user = await response.json();
-                localStorage.setItem('loggedInUser', JSON.stringify(user));
-                setMessage(`Login successful! Welcome, ${user.firstName}. Your User ID is ${user.id}.`);
-
-                if (user.role === 'DOCTOR') {
-                    setTimeout(() => navigate('/doctor-dashboard'), 1500);
-                } else {
-                    setTimeout(() => navigate('/dashboard'), 1500);
-                }
+                const data = await response.json();
+                setMessage(`Profile completed! Your Doctor ID is ${data.id}. Use this ID for Set Availability and My Patients.`);
             } else {
-                const text = await response.text();
-                setMessage(`Error: ${text}`);
+                const errorText = await response.text();
+                setMessage(`Error: ${errorText}`);
             }
         } catch (error) {
             setMessage('Something went wrong. Is the backend server running?');
@@ -60,30 +53,51 @@ function Login() {
                 boxShadow: '0 4px 20px rgba(111, 168, 220, 0.2)',
                 width: '350px'
             }}>
-                <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px' }}>
-                    Welcome Back
+                <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '10px', fontSize: '22px' }}>
+                    Complete Your Doctor Profile
                 </h1>
+                <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
+                    Enter the User ID you received when you registered.
+                </p>
                 <form onSubmit={handleSubmit}>
                     <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
+                        type="number"
+                        name="userId"
+                        placeholder="Your User ID"
+                        value={formData.userId}
                         onChange={handleChange}
                         required
                         style={inputStyle}
                     />
                     <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
+                        type="text"
+                        name="specialization"
+                        placeholder="Specialization (e.g. Cardiologist)"
+                        value={formData.specialization}
+                        onChange={handleChange}
+                        required
+                        style={inputStyle}
+                    />
+                    <input
+                        type="text"
+                        name="licenseNumber"
+                        placeholder="License Number"
+                        value={formData.licenseNumber}
+                        onChange={handleChange}
+                        required
+                        style={inputStyle}
+                    />
+                    <input
+                        type="number"
+                        name="yearsExperience"
+                        placeholder="Years of Experience"
+                        value={formData.yearsExperience}
                         onChange={handleChange}
                         required
                         style={inputStyle}
                     />
                     <button type="submit" style={buttonStyle}>
-                        Login
+                        Save Profile
                     </button>
                 </form>
                 {message && (
@@ -91,12 +105,6 @@ function Login() {
                         {message}
                     </p>
                 )}
-                <p style={{ textAlign: 'center', marginTop: '20px', color: '#2C3E50' }}>
-                    Don't have an account?{' '}
-                    <Link to="/register" style={{ color: '#4A90D9' }}>
-                        Register here
-                    </Link>
-                </p>
             </div>
         </div>
     );
@@ -124,4 +132,4 @@ const buttonStyle = {
     cursor: 'pointer'
 };
 
-export default Login;
+export default CompleteDoctorProfile;

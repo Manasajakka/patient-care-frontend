@@ -30,7 +30,7 @@ function Register() {
 
             if (response.ok) {
                 const data = await response.json();
-                setMessage(`Registration successful! Welcome, ${data.firstName}`);
+                setMessage(`Registration successful! Welcome, ${data.firstName}. Your User ID is ${data.id}. Please save this — you'll need it to log in and complete your profile.`);
             } else {
                 const errorText = await response.text();
                 setMessage(`Error: ${errorText}`);

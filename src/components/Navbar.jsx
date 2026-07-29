@@ -22,6 +22,8 @@ function Navbar() {
             <Link to="/doctor-dashboard" style={linkStyle}>My Patients</Link>
             <Link to="/ask-ai" style={linkStyle}>Ask AI</Link>
             <Link to="/payment" style={linkStyle}>Pay</Link>
+            <Link to="/complete-doctor-profile" style={linkStyle}>Complete Doctor Profile</Link>
+            <Link to="/find-doctor" style={linkStyle}>Find a Doctor</Link>
         </nav>
     );
 }
