@@ -21,6 +21,7 @@ function Navbar() {
             <Link to="/availability" style={linkStyle}>Set Availability</Link>
             <Link to="/doctor-dashboard" style={linkStyle}>My Patients</Link>
             <Link to="/ask-ai" style={linkStyle}>Ask AI</Link>
+            <Link to="/payment" style={linkStyle}>Pay</Link>
         </nav>
     );
 }

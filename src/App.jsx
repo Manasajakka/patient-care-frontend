@@ -7,6 +7,7 @@ import SetAvailability from './pages/SetAvailability';
 import MyAppointments from './pages/MyAppointments';
 import DoctorDashboard from './pages/DoctorDashboard';
 import AskAI from './pages/AskAI';
+import Payment from './pages/Payment';
 function App() {
     return (
         <BrowserRouter>
@@ -20,7 +21,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/register" />} />
                 <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
                 <Route path="/ask-ai" element={<AskAI />} />
-
+                <Route path="/payment" element={<Payment />} />
             </Routes>
         </BrowserRouter>
     );
