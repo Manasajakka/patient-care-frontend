@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function formatTime(timeString) {
     const [hours, minutes] = timeString.split(':');
@@ -54,6 +55,7 @@ function MyAppointments() {
                 width: '500px',
                 height: 'fit-content'
             }}>
+                <Link to="/patient-portal" style={backLinkStyle}>← Back to My Portal</Link>
                 <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px' }}>
                     My Appointments
                 </h1>
@@ -98,6 +100,14 @@ function MyAppointments() {
         </div>
     );
 }
+
+const backLinkStyle = {
+    color: '#4A90D9',
+    fontSize: '13px',
+    marginBottom: '15px',
+    display: 'inline-block',
+    textDecoration: 'none'
+};
 
 const inputStyle = {
     width: '100%',

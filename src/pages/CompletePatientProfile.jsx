@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-function CompleteDoctorProfile() {
+function CompletePatientProfile() {
     const navigate = useNavigate();
     const location = useLocation();
     const prefillUserId = location.state?.userId || '';
 
     const [formData, setFormData] = useState({
         userId: prefillUserId,
-        specialization: '',
-        licenseNumber: '',
-        yearsExperience: ''
+        dateOfBirth: '',
+        medicalHistory: '',
+        emergencyContact: ''
     });
 
     const [message, setMessage] = useState('');
@@ -24,7 +24,7 @@ function CompleteDoctorProfile() {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/api/doctors/profile', {
+            const response = await fetch('http://localhost:8080/api/patients/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -32,9 +32,9 @@ function CompleteDoctorProfile() {
 
             if (response.ok) {
                 const data = await response.json();
-                setMessage(`Profile completed! Your Doctor ID is ${data.id}. Now let's set your availability.`);
+                setMessage(`Profile completed! Your Patient ID is ${data.id}.`);
                 setTimeout(() => {
-                    navigate('/availability', { state: { doctorId: data.id } });
+                    navigate('/patient-portal');
                 }, 1500);
             } else {
                 const errorText = await response.text();
@@ -62,12 +62,12 @@ function CompleteDoctorProfile() {
                 width: '350px'
             }}>
                 <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '10px', fontSize: '22px' }}>
-                    Complete Your Doctor Profile
+                    Complete Your Patient Profile
                 </h1>
                 <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
                     {prefillUserId
                         ? 'Your User ID has been filled in automatically.'
-                        : "Enter the User ID you received when you registered."}
+                        : 'Enter the User ID you received when you registered.'}
                 </p>
                 <form onSubmit={handleSubmit}>
                     <input
@@ -79,29 +79,29 @@ function CompleteDoctorProfile() {
                         required
                         style={inputStyle}
                     />
+                    <label style={labelStyle}>Date of Birth</label>
                     <input
-                        type="text"
-                        name="specialization"
-                        placeholder="Specialization (e.g. Cardiologist)"
-                        value={formData.specialization}
+                        type="date"
+                        name="dateOfBirth"
+                        value={formData.dateOfBirth}
                         onChange={handleChange}
                         required
                         style={inputStyle}
                     />
                     <input
                         type="text"
-                        name="licenseNumber"
-                        placeholder="License Number"
-                        value={formData.licenseNumber}
+                        name="medicalHistory"
+                        placeholder="Medical History (e.g. None)"
+                        value={formData.medicalHistory}
                         onChange={handleChange}
                         required
                         style={inputStyle}
                     />
                     <input
-                        type="number"
-                        name="yearsExperience"
-                        placeholder="Years of Experience"
-                        value={formData.yearsExperience}
+                        type="text"
+                        name="emergencyContact"
+                        placeholder="Emergency Contact (phone number)"
+                        value={formData.emergencyContact}
                         onChange={handleChange}
                         required
                         style={inputStyle}
@@ -131,6 +131,13 @@ const inputStyle = {
     boxSizing: 'border-box'
 };
 
+const labelStyle = {
+    display: 'block',
+    color: '#2C3E50',
+    fontSize: '13px',
+    marginBottom: '6px'
+};
+
 const buttonStyle = {
     width: '100%',
     padding: '12px',
@@ -142,4 +149,4 @@ const buttonStyle = {
     cursor: 'pointer'
 };
 
-export default CompleteDoctorProfile;
+export default CompletePatientProfile;

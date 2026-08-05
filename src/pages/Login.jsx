@@ -28,12 +28,14 @@ function Login() {
             if (response.ok) {
                 const user = await response.json();
                 localStorage.setItem('loggedInUser', JSON.stringify(user));
-                setMessage(`Login successful! Welcome, ${user.firstName}. Your User ID is ${user.id}.`);
+                setMessage(`Login successful! Welcome, ${user.firstName}.`);
 
                 if (user.role === 'DOCTOR') {
-                    setTimeout(() => navigate('/doctor-dashboard'), 1500);
+                    setTimeout(() => navigate('/doctor-portal'), 1500);
+                } else if (user.role === 'ADMIN') {
+                    setTimeout(() => navigate('/admin-portal'), 1500);
                 } else {
-                    setTimeout(() => navigate('/dashboard'), 1500);
+                    setTimeout(() => navigate('/patient-portal'), 1500);
                 }
             } else {
                 const text = await response.text();

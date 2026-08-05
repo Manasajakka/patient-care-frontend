@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -8,10 +8,12 @@ function Register() {
         email: '',
         phoneNumber: '',
         password: '',
-        role: 'PATIENT'
+        role: 'PATIENT',
+        adminCode: ''
     });
 
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -30,7 +32,17 @@ function Register() {
 
             if (response.ok) {
                 const data = await response.json();
-                setMessage(`Registration successful! Welcome, ${data.firstName}. Your User ID is ${data.id}. Please save this — you'll need it to log in and complete your profile.`);
+                setMessage(`Registration successful! Your User ID is ${data.id}.`);
+
+                setTimeout(() => {
+                    if (data.role === 'DOCTOR') {
+                        navigate('/complete-doctor-profile', { state: { userId: data.id } });
+                    } else if (data.role === 'PATIENT') {
+                        navigate('/complete-patient-profile', { state: { userId: data.id } });
+                    } else {
+                        navigate('/login');
+                    }
+                }, 1500);
             } else {
                 const errorText = await response.text();
                 setMessage(`Error: ${errorText}`);
@@ -68,7 +80,19 @@ function Register() {
                     <select name="role" value={formData.role} onChange={handleChange} style={inputStyle}>
                         <option value="PATIENT">Patient</option>
                         <option value="DOCTOR">Doctor</option>
+                        <option value="ADMIN">Admin</option>
                     </select>
+                    {formData.role === 'ADMIN' && (
+                        <input
+                            type="text"
+                            name="adminCode"
+                            placeholder="Admin Signup Code"
+                            value={formData.adminCode}
+                            onChange={handleChange}
+                            required
+                            style={inputStyle}
+                        />
+                    )}
                     <button type="submit" style={buttonStyle}>
                         Register
                     </button>

@@ -1,44 +1,73 @@
 import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+
+const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
 function SetAvailability() {
-    const [formData, setFormData] = useState({
-        doctorId: '',
-        dayOfWeek: 'MONDAY',
-        startTime: '',
-        endTime: '',
-        slotDurationMinutes: 30
-    });
+    const navigate = useNavigate();
+    const location = useLocation();
+    const prefillDoctorId = location.state?.doctorId || '';
 
+    const [doctorId, setDoctorId] = useState(prefillDoctorId);
+    const [selectedDays, setSelectedDays] = useState([]);
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [slotDurationMinutes, setSlotDurationMinutes] = useState(30);
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    function handleChange(event) {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+    function toggleDay(day) {
+        if (selectedDays.includes(day)) {
+            setSelectedDays(selectedDays.filter((d) => d !== day));
+        } else {
+            setSelectedDays([...selectedDays, day]);
+        }
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        try {
-            const response = await fetch('http://localhost:8080/api/availability', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    startTime: formData.startTime + ':00',
-                    endTime: formData.endTime + ':00'
-                })
-            });
+        if (selectedDays.length === 0) {
+            setMessage('Please select at least one day.');
+            return;
+        }
 
-            if (response.ok) {
-                setMessage('Availability added successfully!');
+        setLoading(true);
+        setMessage('');
+
+        try {
+            const results = await Promise.all(
+                selectedDays.map((day) =>
+                    fetch('http://localhost:8080/api/availability', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            doctorId,
+                            dayOfWeek: day,
+                            startTime: startTime + ':00',
+                            endTime: endTime + ':00',
+                            slotDurationMinutes
+                        })
+                    })
+                )
+            );
+
+            const allOk = results.every((r) => r.ok);
+
+            if (allOk) {
+                setMessage(`Availability saved for: ${selectedDays.join(', ')}. Redirecting...`);
+                setSelectedDays([]);
+                setTimeout(() => {
+                    navigate('/doctor-portal');
+                }, 1500);
             } else {
-                const errorText = await response.text();
-                setMessage(`Error: ${errorText}`);
+                setMessage('Some days failed to save. Please check and try again.');
             }
         } catch (error) {
             setMessage('Something went wrong. Is the backend server running?');
         }
+
+        setLoading(false);
     }
 
     return (
@@ -55,59 +84,70 @@ function SetAvailability() {
                 padding: '40px',
                 borderRadius: '12px',
                 boxShadow: '0 4px 20px rgba(111, 168, 220, 0.2)',
-                width: '350px'
+                width: '380px'
             }}>
-                <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px', fontSize: '24px' }}>
+                <Link to="/doctor-portal" style={backLinkStyle}>← Back to My Portal</Link>
+                <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '10px', fontSize: '22px' }}>
                     Set Your Availability
                 </h1>
+                <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
+                    {prefillDoctorId
+                        ? 'Your Doctor ID has been filled in automatically.'
+                        : 'Select all the days you share the same hours, then submit once.'}
+                </p>
                 <form onSubmit={handleSubmit}>
                     <input
                         type="number"
-                        name="doctorId"
                         placeholder="Your Doctor ID"
-                        value={formData.doctorId}
-                        onChange={handleChange}
+                        value={doctorId}
+                        onChange={(e) => setDoctorId(e.target.value)}
                         required
                         style={inputStyle}
                     />
-                    <select name="dayOfWeek" value={formData.dayOfWeek} onChange={handleChange} style={inputStyle}>
-                        <option value="MONDAY">Monday</option>
-                        <option value="TUESDAY">Tuesday</option>
-                        <option value="WEDNESDAY">Wednesday</option>
-                        <option value="THURSDAY">Thursday</option>
-                        <option value="FRIDAY">Friday</option>
-                        <option value="SATURDAY">Saturday</option>
-                        <option value="SUNDAY">Sunday</option>
-                    </select>
+
+                    <label style={labelStyle}>Select Days</label>
+                    <div style={dayGridStyle}>
+                        {DAYS.map((day) => (
+                            <button
+                                type="button"
+                                key={day}
+                                onClick={() => toggleDay(day)}
+                                style={selectedDays.includes(day) ? dayButtonActive : dayButtonInactive}
+                            >
+                                {day.slice(0, 3)}
+                            </button>
+                        ))}
+                    </div>
+
                     <label style={labelStyle}>Start Time</label>
                     <input
                         type="time"
-                        name="startTime"
-                        value={formData.startTime}
-                        onChange={handleChange}
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
                         required
                         style={inputStyle}
                     />
+
                     <label style={labelStyle}>End Time</label>
                     <input
                         type="time"
-                        name="endTime"
-                        value={formData.endTime}
-                        onChange={handleChange}
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
                         required
                         style={inputStyle}
                     />
+
                     <label style={labelStyle}>Slot Length (minutes)</label>
                     <input
                         type="number"
-                        name="slotDurationMinutes"
-                        value={formData.slotDurationMinutes}
-                        onChange={handleChange}
+                        value={slotDurationMinutes}
+                        onChange={(e) => setSlotDurationMinutes(e.target.value)}
                         required
                         style={inputStyle}
                     />
-                    <button type="submit" style={buttonStyle}>
-                        Save Availability
+
+                    <button type="submit" disabled={loading} style={buttonStyle}>
+                        {loading ? 'Saving...' : 'Save Availability'}
                     </button>
                 </form>
                 {message && (
@@ -119,6 +159,14 @@ function SetAvailability() {
         </div>
     );
 }
+
+const backLinkStyle = {
+    color: '#4A90D9',
+    fontSize: '13px',
+    marginBottom: '15px',
+    display: 'inline-block',
+    textDecoration: 'none'
+};
 
 const inputStyle = {
     width: '100%',
@@ -135,7 +183,30 @@ const labelStyle = {
     display: 'block',
     color: '#2C3E50',
     fontSize: '13px',
-    marginBottom: '5px'
+    marginBottom: '6px'
+};
+
+const dayGridStyle = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '6px',
+    marginBottom: '15px'
+};
+
+const dayButtonInactive = {
+    padding: '8px 10px',
+    backgroundColor: '#F9FCFF',
+    color: '#4A90D9',
+    border: '1px solid #6FA8DC',
+    borderRadius: '6px',
+    fontSize: '13px',
+    cursor: 'pointer'
+};
+
+const dayButtonActive = {
+    ...dayButtonInactive,
+    backgroundColor: '#6FA8DC',
+    color: 'white'
 };
 
 const buttonStyle = {

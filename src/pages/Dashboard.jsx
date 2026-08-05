@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 function formatTime(timeString) {
     const [hours, minutes] = timeString.split(':');
@@ -9,6 +10,7 @@ function formatTime(timeString) {
 }
 
 function Dashboard() {
+    const navigate = useNavigate();
     const [patientId, setPatientId] = useState('');
     const [doctorId, setDoctorId] = useState('');
     const [date, setDate] = useState('');
@@ -55,8 +57,9 @@ function Dashboard() {
             const text = await response.text();
 
             if (response.ok) {
-                setMessage(`Appointment booked for ${formatTime(time)}!`);
+                setMessage(`Appointment booked for ${formatTime(time)}! Redirecting to your portal...`);
                 setSlots(slots.filter((slot) => slot !== time));
+                setTimeout(() => navigate('/patient-portal'), 2000);
             } else {
                 setMessage(`Booking failed: ${text}`);
             }
@@ -82,6 +85,7 @@ function Dashboard() {
                 width: '450px',
                 height: 'fit-content'
             }}>
+                <Link to="/patient-portal" style={backLinkStyle}>← Back to My Portal</Link>
                 <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px' }}>
                     Book an Appointment
                 </h1>
@@ -140,6 +144,14 @@ function Dashboard() {
         </div>
     );
 }
+
+const backLinkStyle = {
+    color: '#4A90D9',
+    fontSize: '13px',
+    marginBottom: '15px',
+    display: 'inline-block',
+    textDecoration: 'none'
+};
 
 const inputStyle = {
     width: '100%',

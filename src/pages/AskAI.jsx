@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function AskAI() {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const storedUser = localStorage.getItem('loggedInUser');
+    const user = storedUser ? JSON.parse(storedUser) : null;
+    const backLink = user?.role === 'DOCTOR' ? '/doctor-portal' : '/patient-portal';
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -48,6 +53,7 @@ function AskAI() {
                 width: '500px',
                 height: 'fit-content'
             }}>
+                <Link to={backLink} style={backLinkStyle}>← Back to My Portal</Link>
                 <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '10px' }}>
                     Ask the AI Assistant
                 </h1>
@@ -77,6 +83,14 @@ function AskAI() {
         </div>
     );
 }
+
+const backLinkStyle = {
+    color: '#4A90D9',
+    fontSize: '13px',
+    marginBottom: '15px',
+    display: 'inline-block',
+    textDecoration: 'none'
+};
 
 const inputStyle = {
     width: '100%',

@@ -9,29 +9,44 @@ function formatTime(timeString) {
     return `${displayHour}:${minutes} ${period}`;
 }
 
-function DoctorDashboard() {
-    const [doctorId, setDoctorId] = useState('');
+function ClinicReports() {
+    const storedUser = localStorage.getItem('loggedInUser');
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [totalAppointments, setTotalAppointments] = useState(null);
     const [appointments, setAppointments] = useState([]);
     const [message, setMessage] = useState('');
 
-    async function fetchAppointments(event) {
+    if (!user || user.role !== 'ADMIN') {
+        return (
+            <div style={{ minHeight: '90vh', backgroundColor: '#F4F9FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Arial' }}>
+                <p style={{ color: '#2C3E50' }}>You do not have permission to view this page.</p>
+            </div>
+        );
+    }
+
+    async function fetchReport(event) {
         event.preventDefault();
         setMessage('');
         setAppointments([]);
+        setTotalAppointments(null);
 
         try {
             const response = await fetch(
-                `http://localhost:8080/api/appointments/doctor/${doctorId}`
+                `http://localhost:8080/api/reports/appointments-by-date-range?startDate=${startDate}&endDate=${endDate}`
             );
 
             if (response.ok) {
                 const data = await response.json();
-                setAppointments(data);
-                if (data.length === 0) {
-                    setMessage('No appointments found.');
+                setTotalAppointments(data.totalAppointments);
+                setAppointments(data.appointments);
+                if (data.totalAppointments === 0) {
+                    setMessage('No appointments found in this date range.');
                 }
             } else {
-                setMessage('Could not fetch appointments.');
+                setMessage('Could not load report.');
             }
         } catch (error) {
             setMessage('Something went wrong. Is the backend server running?');
@@ -52,24 +67,32 @@ function DoctorDashboard() {
                 padding: '40px',
                 borderRadius: '12px',
                 boxShadow: '0 4px 20px rgba(111, 168, 220, 0.2)',
-                width: '500px',
+                width: '550px',
                 height: 'fit-content'
             }}>
-                <Link to="/doctor-portal" style={backLinkStyle}>← Back to My Portal</Link>
+                <Link to="/admin-portal" style={backLinkStyle}>← Back to Admin Portal</Link>
                 <h1 style={{ color: '#2C3E50', textAlign: 'center', marginBottom: '25px' }}>
-                    My Patients
+                    Clinic Appointment Report
                 </h1>
-                <form onSubmit={fetchAppointments}>
+                <form onSubmit={fetchReport}>
+                    <label style={labelStyle}>Start Date</label>
                     <input
-                        type="number"
-                        placeholder="Your Doctor ID"
-                        value={doctorId}
-                        onChange={(e) => setDoctorId(e.target.value)}
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        required
+                        style={inputStyle}
+                    />
+                    <label style={labelStyle}>End Date</label>
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
                         required
                         style={inputStyle}
                     />
                     <button type="submit" style={buttonStyle}>
-                        View My Appointments
+                        Generate Report
                     </button>
                 </form>
 
@@ -79,17 +102,23 @@ function DoctorDashboard() {
                     </p>
                 )}
 
-                {appointments.length > 0 && (
+                {totalAppointments !== null && totalAppointments > 0 && (
                     <div style={{ marginTop: '20px' }}>
+                        <h3 style={{ color: '#2C3E50' }}>
+                            Total Appointments: {totalAppointments}
+                        </h3>
                         {appointments.map((appt) => (
                             <div key={appt.id} style={cardStyle}>
                                 <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#2C3E50' }}>
                                     {appt.patient.user.firstName} {appt.patient.user.lastName}
                                 </p>
                                 <p style={{ margin: '0 0 5px 0', color: '#2C3E50' }}>
+                                    with Dr. {appt.doctor.user.firstName} {appt.doctor.user.lastName}
+                                </p>
+                                <p style={{ margin: '0 0 5px 0', color: '#2C3E50' }}>
                                     {appt.appointmentDate} at {formatTime(appt.appointmentTime)}
                                 </p>
-                                <p style={{ margin: '0', color: '#4A90D9', fontSize: '13px' }}>
+                                <p style={{ margin: 0, color: '#4A90D9', fontSize: '13px' }}>
                                     Status: {appt.status}
                                 </p>
                             </div>
@@ -120,6 +149,13 @@ const inputStyle = {
     boxSizing: 'border-box'
 };
 
+const labelStyle = {
+    display: 'block',
+    color: '#2C3E50',
+    fontSize: '13px',
+    marginBottom: '6px'
+};
+
 const buttonStyle = {
     width: '100%',
     padding: '12px',
@@ -139,4 +175,4 @@ const cardStyle = {
     marginBottom: '10px'
 };
 
-export default DoctorDashboard;
+export default ClinicReports;
