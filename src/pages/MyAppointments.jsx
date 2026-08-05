@@ -86,6 +86,9 @@ function MyAppointments() {
                                 <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#2C3E50' }}>
                                     Dr. {appt.doctor.user.firstName} {appt.doctor.user.lastName}
                                 </p>
+                                <p style={{ margin: '0 0 5px 0', color: '#6b7280', fontSize: '12px' }}>
+                                    Appointment ID: {appt.id}
+                                </p>
                                 <p style={{ margin: '0 0 5px 0', color: '#2C3E50' }}>
                                     {appt.appointmentDate} at {formatTime(appt.appointmentTime)}
                                 </p>
